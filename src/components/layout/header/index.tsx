@@ -19,12 +19,12 @@ import AppsSvg from 'components/svg/apps-svg';
 import { routes } from 'core/constants/routes';
 import Modal from 'components/ui/modal';
 import OptionsList from 'components/options';
+import SupportModal from 'components/ui/support';
 
 const Header: FC = memo(() => {
   const dispatch = useAppDispatch();
   const { isActive } = useAppSelector((state) => state.sidebarReducer);
   const [isModalHidden, setModalHidden] = useState(true);
-
   const { setIsActive, setIsOpened } = sidebarActions;
 
   const { user } = useAppSelector((state) => state.userReducer);
@@ -37,6 +37,8 @@ const Header: FC = memo(() => {
   const optionsClickHandler = () => {
     setModalHidden(false);
   };
+
+  const [isSupportModalHidden, setSupportModalHidden] = useState(true);
 
   return (
     <>
@@ -60,12 +62,24 @@ const Header: FC = memo(() => {
             </SearchInputContainer>
             <StatusSelect />
             <Tooltip text="Поддержка">
-              <RoundButton size="24px" padding="8px">
+              <RoundButton
+                size="24px"
+                padding="8px"
+                onClick={() => {
+                  setSupportModalHidden(false);
+                }}
+              >
                 <SupportSvg />
               </RoundButton>
             </Tooltip>
             <Tooltip text="Настройки">
-              <RoundButton size="24px" padding="8px" onClick={optionsClickHandler}>
+              <RoundButton
+                size="24px"
+                padding="8px"
+                onClick={() => {
+                  optionsClickHandler();
+                }}
+              >
                 <OptionsGearSvg />
               </RoundButton>
             </Tooltip>
@@ -83,6 +97,13 @@ const Header: FC = memo(() => {
             </Tooltip>
           </FlexContainer>
         </FlexContainer>
+        <SupportModal
+          isHidden={isSupportModalHidden}
+          setHidden={setSupportModalHidden}
+          leftCord={document.documentElement.clientWidth - 128 - 238}
+        />
+        {/* 238 - SupportModal width */}
+        {/* 128 - right indent of SupportModal */}
       </StyledHeader>
       <Modal title="Настройки" isHidden={isModalHidden} setHidden={setModalHidden}>
         <OptionsList />
