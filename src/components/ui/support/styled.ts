@@ -4,22 +4,9 @@ interface displayProps {
   display?: 'block' | 'none';
 }
 
-interface leftProps {
-  left?: number;
-}
-
-export const StyledSupportOutter = styled.div<displayProps>`
+export const StyledSupportModal = styled.div<displayProps>`
   display: ${({ display = 'none' }) => display};
   position: absolute;
-  width: 100%;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  z-index: 2;
-`;
-
-export const StyledSupportModal = styled.div<leftProps>`
-  position: fixed;
   width: 238px;
   height: 111px;
   box-shadow: 0 1px 2px 0 rgb(60 64 67 / 30%), 0 2px 6px 2px rgb(60 64 67 / 15%);
@@ -27,9 +14,9 @@ export const StyledSupportModal = styled.div<leftProps>`
   border-radius: 4px;
   outline: 1px solid transparent;
   background: #fff;
-  top: 52px;
-
-  left: ${({ left }) => `${left}px`};
+  top: 48px;
+  z-index: 2;
+  right: 40px;
 `;
 
 export const StyledSUpportInnerHR = styled.hr`

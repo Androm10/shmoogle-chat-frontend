@@ -37,8 +37,20 @@ const Header: FC = memo(() => {
   const optionsClickHandler = () => {
     setModalHidden(false);
   };
-
   const [isSupportModalHidden, setSupportModalHidden] = useState(true);
+
+  const supportClickHandler = () => {
+    if (isSupportModalHidden) {
+      const cb = () => {
+        setTimeout(() => {
+          setSupportModalHidden(true);
+        }, 1);
+        document.removeEventListener('mouseup', cb);
+      };
+      setSupportModalHidden(false);
+      document.addEventListener('mouseup', cb);
+    }
+  };
 
   return (
     <>
@@ -62,16 +74,11 @@ const Header: FC = memo(() => {
             </SearchInputContainer>
             <StatusSelect />
             <Tooltip text="Поддержка">
-              <RoundButton
-                size="24px"
-                padding="8px"
-                onClick={() => {
-                  setSupportModalHidden(false);
-                }}
-              >
+              <RoundButton size="24px" padding="8px" onClick={supportClickHandler}>
                 <SupportSvg />
               </RoundButton>
             </Tooltip>
+            <SupportModal isHidden={isSupportModalHidden} />
             <Tooltip text="Настройки">
               <RoundButton
                 size="24px"
@@ -97,13 +104,6 @@ const Header: FC = memo(() => {
             </Tooltip>
           </FlexContainer>
         </FlexContainer>
-        <SupportModal
-          isHidden={isSupportModalHidden}
-          setHidden={setSupportModalHidden}
-          leftCord={document.documentElement.clientWidth - 128 - 238}
-        />
-        {/* 238 - SupportModal width */}
-        {/* 128 - right indent of SupportModal */}
       </StyledHeader>
       <Modal title="Настройки" isHidden={isModalHidden} setHidden={setModalHidden}>
         <OptionsList />
