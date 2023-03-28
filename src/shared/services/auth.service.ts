@@ -1,4 +1,3 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
 import { JWT_ACCESS_TOKEN, JWT_EXPIRES_AT, JWT_REFRESH_TOKEN } from 'core/constants/tokens';
 import { IAuthService, LoginBackendData } from 'core/interfaces/auth-service.interface';
 import { ApiService } from './api.service';
@@ -34,6 +33,20 @@ export class AuthService implements IAuthService {
     return tokens;
   }
 
+  async grantNewTokens() {
+    this.api.axiosInstance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        if (error?.response?.status !== 401 || !this.refreshToken) return Promise.reject(error);
+        const tokens = await this.api.post<LoginBackendData>('auth/grantNewTokens', {
+          refreshToken: this.refreshToken,
+        });
+        this.setupTokens(tokens);
+        error.config.retry -= 1;
+        return this.api.axiosInstance.request(error.config);
+      },
+    );
+  }
   async refreshTokens() {
     if (this.refreshToken) {
       const tokens = await this.api.post<LoginBackendData>('auth/grantNewTokens', {
@@ -53,7 +66,7 @@ export class AuthService implements IAuthService {
 
     const expirationDate = new Date(expirationDateString);
 
-    if (expirationDate < new Date()) {
+    if (expirationDate < new Date() && !this.refreshToken) {
       return false;
     }
 
@@ -62,7 +75,7 @@ export class AuthService implements IAuthService {
 
   logout(): void {
     localStorage.removeItem(JWT_ACCESS_TOKEN);
-    localStorage.removeItem(JWT_REFRESH_TOKEN);
+    // localStorage.removeItem(JWT_REFRESH_TOKEN);
     localStorage.removeItem(JWT_EXPIRES_AT);
   }
 
